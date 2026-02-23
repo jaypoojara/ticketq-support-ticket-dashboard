@@ -9,6 +9,7 @@ interface AppSidebarProps {
   onViewChange: (view: NavView) => void;
   currentAgentId: string;
   onAgentChange: (id: string) => void;
+  urgentCount: number;
 }
 
 const navItems: { id: NavView; label: string; icon: string; count?: number }[] = [
@@ -25,14 +26,14 @@ const statusColors: Record<string, string> = {
   offline: '#9ca3af',
 };
 
-export function AppSidebar({ activeView, onViewChange, currentAgentId, onAgentChange }: AppSidebarProps) {
+export function AppSidebar({ activeView, onViewChange, currentAgentId, onAgentChange, urgentCount }: AppSidebarProps) {
   return (
     <div
       className="flex h-full flex-col"
       style={{ width: 220, background: 'var(--sidebar-bg)', borderRight: '1px solid rgba(255,255,255,0.06)' }}
     >
       {/* Logo */}
-      <div className="px-5 py-5" style={{ borderBottom: '1px solid rgba(255,255,255,0.06)' }}>
+      <div className="px-4 flex items-center" style={{ height: 52, borderBottom: '1px solid rgba(255,255,255,0.06)', flexShrink: 0 }}>
         <div className="flex items-center gap-2.5">
           <div
             className="flex h-8 w-8 items-center justify-center rounded-lg text-white text-sm font-bold"
@@ -71,7 +72,15 @@ export function AppSidebar({ activeView, onViewChange, currentAgentId, onAgentCh
                 <path d={item.icon} />
               </svg>
               <span className="flex-1 text-sm font-medium">{item.label}</span>
-              {item.count !== undefined && (
+              {item.id === 'inbox' && urgentCount > 0 && (
+                <span
+                  className="text-xs rounded-full px-1.5 py-0.5 font-semibold"
+                  style={{ background: '#ef4444', color: 'white' }}
+                >
+                  {urgentCount}
+                </span>
+              )}
+              {item.count !== undefined && !(item.id === 'inbox' && urgentCount > 0) && (
                 <span
                   className="text-xs rounded-full px-1.5 py-0.5 font-semibold"
                   style={{

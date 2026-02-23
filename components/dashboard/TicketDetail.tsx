@@ -69,47 +69,50 @@ export function TicketDetail({
     <div className="flex h-full flex-col flex-1 min-w-0" style={{ background: 'var(--bg)' }}>
       {/* Ticket header */}
       <div
-        className="px-6 py-4 flex-shrink-0"
+        className="px-5 pt-4 pb-3 flex-shrink-0"
         style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-card)' }}
       >
-        <div className="flex items-start gap-3 mb-3">
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-2 mb-1">
-              <span className="text-xs font-mono" style={{ color: 'var(--fg-muted)' }}>#{ticket.number}</span>
-              <span className="text-xs" style={{ color: 'var(--fg-muted)' }}>·</span>
-              <span className="text-xs" style={{ color: 'var(--fg-muted)' }}>{channelLabel[ticket.channel]}</span>
-              <span className="text-xs" style={{ color: 'var(--fg-muted)' }}>·</span>
-              <span className="text-xs" style={{ color: 'var(--fg-muted)' }}>Opened {ticket.createdAt}</span>
-            </div>
-            <h1
-              className="text-base font-bold leading-tight"
-              style={{ color: 'var(--fg)', fontFamily: 'var(--font-outfit)' }}
-            >
-              {ticket.subject}
-            </h1>
-          </div>
+        {/* Top row: breadcrumb + Customer toggle */}
+        <div className="flex items-center gap-1.5 mb-2">
+          <span
+            className="font-mono text-xs font-semibold px-1.5 py-0.5 rounded"
+            style={{ background: 'var(--bg-panel)', color: 'var(--accent)', border: '1px solid var(--border)' }}
+          >
+            #{ticket.number}
+          </span>
+          <span style={{ color: 'var(--border)', fontSize: 12 }}>·</span>
+          <span className="text-xs" style={{ color: 'var(--fg-muted)' }}>{channelLabel[ticket.channel]}</span>
+          <span style={{ color: 'var(--border)', fontSize: 12 }}>·</span>
+          <span className="text-xs" style={{ color: 'var(--fg-muted)' }}>Opened {ticket.createdAt}</span>
+          <span style={{ color: 'var(--border)', fontSize: 12 }}>·</span>
+          <span className="text-xs" style={{ color: 'var(--fg-muted)' }}>Updated {ticket.updatedAt}</span>
 
-          {/* Action buttons */}
-          <div className="flex items-center gap-2 flex-shrink-0">
-            {/* Customer panel toggle */}
-            <button
-              onClick={onToggleCustomer}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all"
-              style={{
-                background: showCustomerPanel ? 'var(--accent)' : 'var(--bg-panel)',
-                color: showCustomerPanel ? 'white' : 'var(--fg-muted)',
-                border: `1px solid ${showCustomerPanel ? 'var(--accent)' : 'var(--border)'}`,
-              }}
-            >
-              <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 13, height: 13 }}>
-                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
-              </svg>
-              Customer
-            </button>
-          </div>
+          {/* Customer toggle — anchored to the right of meta row */}
+          <button
+            onClick={onToggleCustomer}
+            className="ml-auto flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-medium transition-all flex-shrink-0"
+            style={{
+              background: showCustomerPanel ? 'var(--accent)' : 'var(--bg-panel)',
+              color: showCustomerPanel ? 'white' : 'var(--fg-muted)',
+              border: `1px solid ${showCustomerPanel ? 'var(--accent)' : 'var(--border)'}`,
+            }}
+          >
+            <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 12, height: 12 }}>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 3c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3zm0 14.2c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z" />
+            </svg>
+            Customer
+          </button>
         </div>
 
-        {/* Controls row */}
+        {/* Subject */}
+        <h1
+          className="mb-3 leading-snug"
+          style={{ color: 'var(--fg)', fontFamily: 'var(--font-outfit)', fontSize: 17, fontWeight: 700 }}
+        >
+          {ticket.subject}
+        </h1>
+
+        {/* Controls row — status / priority / assign on one line, tags below */}
         <div className="flex items-center gap-2 flex-wrap">
           {/* Status */}
           <div className="relative">
@@ -260,11 +263,11 @@ export function TicketDetail({
           </div>
 
           {/* Tags */}
-          <div className="flex items-center gap-1 ml-1">
+          <div className="flex items-center gap-1 flex-wrap">
             {ticket.tags.map((tag) => (
               <span
                 key={tag}
-                className="text-xs px-2 py-0.5 rounded-full cursor-pointer transition-all"
+                className="text-xs px-2 py-0.5 rounded-full cursor-pointer"
                 style={{ background: 'var(--accent-light)', color: 'var(--accent)' }}
               >
                 {tag}

@@ -15,12 +15,12 @@ interface TicketListProps {
 }
 
 const statusTabs: { id: string; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'new', label: 'New' },
-  { id: 'open', label: 'Open' },
-  { id: 'pending', label: 'Pending' },
-  { id: 'resolved', label: 'Resolved' },
-  { id: 'closed', label: 'Closed' },
+  { id: 'all',      label: 'All'     },
+  { id: 'new',      label: 'New'     },
+  { id: 'open',     label: 'Open'    },
+  { id: 'pending',  label: 'Pending' },
+  { id: 'resolved', label: 'Resolved'},
+  { id: 'closed',   label: 'Closed'  },
 ];
 
 const priorityConfig: Record<Priority, { label: string; color: string; bg: string; dot: string }> = {
@@ -76,25 +76,13 @@ export function TicketList({
       className="flex h-full flex-col"
       style={{ width: 320, background: 'var(--bg-panel)', borderRight: '1px solid var(--border)' }}
     >
-      {/* Header */}
-      <div className="px-4 pt-4 pb-3" style={{ borderBottom: '1px solid var(--border)' }}>
-        <div className="flex items-center justify-between mb-3">
-          <h2 style={{ fontFamily: 'var(--font-outfit)', fontSize: 15, fontWeight: 700, color: 'var(--fg)' }}>
-            Ticket Queue
-          </h2>
-          <span
-            className="text-xs font-semibold px-2 py-0.5 rounded-full"
-            style={{ background: 'var(--accent)', color: 'white' }}
-          >
-            {filtered.length}
-          </span>
-        </div>
-
+      {/* Search + filter header */}
+      <div className="px-3 pt-3 pb-2" style={{ borderBottom: '1px solid var(--border)' }}>
         {/* Search */}
-        <div className="relative mb-3">
+        <div className="relative mb-2">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2}
             className="absolute left-3 top-1/2 -translate-y-1/2"
-            style={{ width: 14, height: 14, color: 'var(--fg-muted)' }}
+            style={{ width: 13, height: 13, color: 'var(--fg-muted)' }}
           >
             <circle cx={11} cy={11} r={8} /><path d="M21 21l-4.35-4.35" />
           </svg>
@@ -103,62 +91,93 @@ export function TicketList({
             placeholder="Search tickets..."
             value={searchQuery}
             onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full rounded-lg pl-8 pr-3 py-2 text-sm outline-none transition-all"
+            className="w-full rounded-lg pl-8 pr-3 outline-none transition-all"
             style={{
+              height: 34,
               background: 'var(--bg-card)',
               border: '1px solid var(--border)',
               color: 'var(--fg)',
-              fontSize: 13,
+              fontSize: 12,
             }}
             onFocus={(e) => (e.currentTarget.style.borderColor = 'var(--accent)')}
             onBlur={(e) => (e.currentTarget.style.borderColor = 'var(--border)')}
           />
+          {searchQuery && (
+            <button
+              onClick={() => onSearchChange('')}
+              className="absolute right-2.5 top-1/2 -translate-y-1/2 text-xs"
+              style={{ color: 'var(--fg-muted)' }}
+            >
+              ×
+            </button>
+          )}
         </div>
 
-        {/* Priority filter */}
-        <select
-          value={priorityFilter}
-          onChange={(e) => onPriorityChange(e.target.value)}
-          className="w-full rounded-lg px-3 py-1.5 text-sm outline-none cursor-pointer"
-          style={{
-            background: 'var(--bg-card)',
-            border: '1px solid var(--border)',
-            color: 'var(--fg)',
-            fontSize: 12,
-          }}
-        >
-          <option value="all">All Priorities</option>
-          <option value="urgent">🔴 Urgent</option>
-          <option value="high">🟠 High</option>
-          <option value="normal">🔵 Normal</option>
-          <option value="low">⚪ Low</option>
-        </select>
+        {/* Priority + count row */}
+        <div className="flex items-center gap-2">
+          <select
+            value={priorityFilter}
+            onChange={(e) => onPriorityChange(e.target.value)}
+            className="flex-1 rounded-lg px-2.5 outline-none cursor-pointer"
+            style={{
+              height: 30,
+              background: 'var(--bg-card)',
+              border: '1px solid var(--border)',
+              color: priorityFilter !== 'all' ? 'var(--fg)' : 'var(--fg-muted)',
+              fontSize: 11,
+            }}
+          >
+            <option value="all">All Priorities</option>
+            <option value="urgent">🔴 Urgent</option>
+            <option value="high">🟠 High</option>
+            <option value="normal">🔵 Normal</option>
+            <option value="low">⚪ Low</option>
+          </select>
+          <div
+            className="flex items-center justify-center rounded-lg font-semibold text-xs"
+            style={{
+              height: 30,
+              minWidth: 30,
+              background: 'var(--accent)',
+              color: 'white',
+              padding: '0 8px',
+            }}
+          >
+            {filtered.length}
+          </div>
+        </div>
       </div>
 
-      {/* Status tabs */}
+      {/* Status tabs — 3-column grid so all 6 always fit */}
       <div
-        className="flex gap-0.5 px-3 py-2 overflow-x-auto"
-        style={{ borderBottom: '1px solid var(--border)', background: 'var(--bg-panel)' }}
+        className="grid gap-1 px-3 py-2"
+        style={{
+          gridTemplateColumns: 'repeat(3, 1fr)',
+          borderBottom: '1px solid var(--border)',
+          background: 'var(--bg-panel)',
+        }}
       >
         {statusTabs.map((tab) => {
           const active = statusFilter === tab.id;
+          const count = counts[tab.id];
           return (
             <button
               key={tab.id}
               onClick={() => onStatusChange(tab.id)}
-              className="flex-shrink-0 px-2.5 py-1 rounded-md text-xs font-medium transition-all"
+              className="flex items-center justify-center gap-1 py-1 rounded-md text-xs font-medium transition-all"
               style={{
-                background: active ? 'var(--accent)' : 'transparent',
+                background: active ? 'var(--accent)' : 'var(--bg-card)',
                 color: active ? 'white' : 'var(--fg-muted)',
+                border: `1px solid ${active ? 'var(--accent)' : 'var(--border)'}`,
               }}
             >
               {tab.label}
-              {counts[tab.id] ? (
+              {count ? (
                 <span
-                  className="ml-1 text-xs"
-                  style={{ opacity: active ? 0.8 : 0.6 }}
+                  className="font-semibold"
+                  style={{ opacity: active ? 0.85 : 0.7, fontSize: 10 }}
                 >
-                  {counts[tab.id]}
+                  {count}
                 </span>
               ) : null}
             </button>
