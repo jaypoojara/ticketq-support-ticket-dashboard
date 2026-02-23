@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useMemo } from "react";
+import { useRouter } from "next/navigation";
+import { useMember, useMemberstack } from "@memberstack/react";
 import { initialTickets, customers, agents, Ticket, Priority, TicketStatus } from "@/lib/ticketData";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
 import { TicketList } from "@/components/dashboard/TicketList";
@@ -18,6 +20,26 @@ const viewLabels: Record<NavView, string> = {
 };
 
 export default function Dashboard() {
+  const { data: member } = useMember();
+  const memberstack = useMemberstack();
+  const router = useRouter();
+
+  // Derive a display name from the Memberstack member
+  const memberName =
+    (member as { customFields?: { name?: string } } | null)?.customFields?.name ||
+    member?.auth?.email?.split("@")[0] ||
+    "Agent";
+  const memberInitials = memberName
+    .split(" ")
+    .map((w: string) => w[0]?.toUpperCase() ?? "")
+    .slice(0, 2)
+    .join("") || "AG";
+
+  const handleLogout = async () => {
+    await memberstack.logoutMember();
+    router.push("/login");
+  };
+
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
   const [selectedId, setSelectedId] = useState<string>('t1');
   const [statusFilter, setStatusFilter] = useState('all');
@@ -158,16 +180,43 @@ export default function Dashboard() {
               </div>
             )}
 
-            {/* Current agent avatar */}
+            {/* Current member identity + logout */}
             <div className="flex items-center gap-2 pl-3" style={{ borderLeft: '1px solid var(--border)' }}>
               <div
-                className="flex h-7 w-7 items-center justify-center rounded-full text-white text-xs font-bold"
-                style={{ background: '#6366f1' }}
+                className="flex h-7 w-7 items-center justify-center rounded-full text-white text-xs font-bold flex-shrink-0"
+                style={{ background: 'var(--accent)' }}
               >
-                MC
+                {memberInitials}
               </div>
-              <span className="text-sm font-medium" style={{ color: 'var(--fg)' }}>Maya Chen</span>
-              <div className="w-2 h-2 rounded-full" style={{ background: '#10b981' }} />
+              <span
+                className="text-sm font-medium max-w-[120px] truncate"
+                style={{ color: 'var(--fg)' }}
+              >
+                {memberName}
+              </span>
+              <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ background: '#10b981' }} />
+
+              {/* Sign out */}
+              <button
+                onClick={handleLogout}
+                title="Sign out"
+                className="ml-1 flex items-center justify-center rounded-md p-1.5 transition-colors"
+                style={{ color: 'var(--fg-muted)' }}
+                onMouseEnter={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = 'var(--bg-panel)';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--fg)';
+                }}
+                onMouseLeave={(e) => {
+                  (e.currentTarget as HTMLElement).style.background = 'transparent';
+                  (e.currentTarget as HTMLElement).style.color = 'var(--fg-muted)';
+                }}
+              >
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2} style={{ width: 15, height: 15 }}>
+                  <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+              </button>
             </div>
           </div>
         </div>

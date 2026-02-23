@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AgentationProvider } from "@/components/AgentationProvider";
+import { MemberstackWrapper } from "@/components/MemberstackWrapper";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -28,7 +29,9 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${outfit.variable} ${jakarta.variable}`}>
       <body className="antialiased">
-        {children}
+        <MemberstackWrapper>
+          {children}
+        </MemberstackWrapper>
         <AgentationProvider />
       </body>
     </html>

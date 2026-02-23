@@ -10,6 +10,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@memberstack/react": "^2.0.30",
     "agentation": "^1.3.1",
     "next": "16.1.2",
     "react": "19.2.3",

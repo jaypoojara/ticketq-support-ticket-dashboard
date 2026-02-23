@@ -10,6 +10,29 @@
 
 ## Pages
 - **Dashboard** (`/`) — The full support ticket dashboard with all panels
+- **Login** (`/login`) — Branded sign-in page. Required before accessing the dashboard.
+- **Signup** (`/signup`) — New agent registration page. Collects name, email, and password.
+
+## Authentication (Memberstack)
+TicketQ uses **Memberstack** to protect the dashboard. Only logged-in members can access it.
+
+### How it works
+1. Any visitor who isn't logged in is automatically sent to `/login`
+2. They sign in with email + password
+3. After success, they land on the dashboard
+4. Their name/email appears in the top bar, with a sign-out button
+
+### Setup required
+You must add your Memberstack public key to the `.env.local` file:
+```
+NEXT_PUBLIC_MEMBERSTACK_PUBLIC_KEY=pk_your_actual_key_here
+```
+Get this key from your Memberstack dashboard under **Settings → API Keys**.
+
+### Key files
+- `middleware.ts` — Handles redirect logic (unauthenticated → `/login`, logged-in → `/`)
+- `components/MemberstackWrapper.tsx` — Wraps the app with the Memberstack provider
+- `app/login/page.tsx` — The custom login page
 
 ## Components
 
@@ -66,9 +89,11 @@ Mock data including:
 - **Satisfaction ratings** — shown as stars on resolved/closed tickets
 
 ## Recent Changes
+- 2026-02-23: Added Memberstack auth — login page, route protection middleware, real member identity in top bar, sign-out button
 - 2026-02-23: Created full TicketQ dashboard template with all interactive features
 
 ## How to Customize
+- **To connect real auth:** Replace `pk_your_key_here` in `.env.local` with your actual Memberstack public key
 - **To change colors:** Edit the CSS variables at the top of `app/globals.css`
 - **To add tickets:** Add entries to the `initialTickets` array in `lib/ticketData.ts`
 - **To add agents:** Add entries to the `agents` array in `lib/ticketData.ts`
