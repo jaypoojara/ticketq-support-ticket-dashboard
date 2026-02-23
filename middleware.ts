@@ -4,7 +4,7 @@ import type { NextRequest } from "next/server";
 export function middleware(request: NextRequest) {
   const memberToken = request.cookies.get("_ms-mid")?.value;
   const { pathname } = request.nextUrl;
-  const isAuthPage = pathname === "/login" || pathname === "/signup";
+  const isAuthPage = pathname === "/login";
 
   // Not logged in and trying to access a protected page → send to login
   if (!memberToken && !isAuthPage) {

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useMemberstack } from "@memberstack/react";
-import Link from "next/link";
 
 export default function LoginPage() {
   const memberstack = useMemberstack();
@@ -200,14 +199,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-center text-xs mt-6" style={{ color: "var(--fg-muted)" }}>
-          Don&apos;t have an account?{" "}
-          <Link
-            href="/signup"
-            className="font-semibold transition-opacity hover:opacity-70"
-            style={{ color: "var(--accent)" }}
-          >
-            Create one
-          </Link>
+          Need access? Contact your admin.
         </p>
       </div>
     </div>

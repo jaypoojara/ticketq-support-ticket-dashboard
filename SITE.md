@@ -10,15 +10,14 @@
 
 ## Pages
 - **Dashboard** (`/`) — The full support ticket dashboard with all panels
-- **Login** (`/login`) — Branded sign-in page. Required before accessing the dashboard.
-- **Signup** (`/signup`) — New agent registration page. Collects name, email, and password.
+- **Login** (`/login`) — Branded sign-in page. Required before accessing the dashboard. Shows "Need access? Contact your admin." instead of a signup link.
 
 ## Authentication (Memberstack)
 TicketQ uses **Memberstack** to protect the dashboard. Only logged-in members can access it.
 
 ### How it works
 1. Any visitor who isn't logged in is automatically sent to `/login`
-2. They sign in with email + password
+2. They sign in with email + password (agents are added by the admin in Memberstack)
 3. After success, they land on the dashboard
 4. Their name/email appears in the top bar, with a sign-out button
 
@@ -89,6 +88,7 @@ Mock data including:
 - **Satisfaction ratings** — shown as stars on resolved/closed tickets
 
 ## Recent Changes
+- 2026-02-23: Removed self-signup — agents are now added via Memberstack dashboard (invite-only)
 - 2026-02-23: Added Memberstack auth — login page, route protection middleware, real member identity in top bar, sign-out button
 - 2026-02-23: Created full TicketQ dashboard template with all interactive features
 
