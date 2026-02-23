@@ -1,134 +1,172 @@
-export default function Home() {
+"use client";
+
+import { useState, useMemo } from "react";
+import { initialTickets, customers, agents, Ticket, Priority, TicketStatus } from "@/lib/ticketData";
+import { AppSidebar } from "@/components/dashboard/AppSidebar";
+import { TicketList } from "@/components/dashboard/TicketList";
+import { TicketDetail } from "@/components/dashboard/TicketDetail";
+import { CustomerPanel } from "@/components/dashboard/CustomerPanel";
+
+type NavView = 'inbox' | 'all' | 'mine' | 'team' | 'reports';
+
+export default function Dashboard() {
+  const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
+  const [selectedId, setSelectedId] = useState<string>('t1');
+  const [statusFilter, setStatusFilter] = useState('all');
+  const [priorityFilter, setPriorityFilter] = useState('all');
+  const [searchQuery, setSearchQuery] = useState('');
+  const [activeView, setActiveView] = useState<NavView>('inbox');
+  const [agentFilter, setAgentFilter] = useState('');
+  const [showCustomerPanel, setShowCustomerPanel] = useState(true);
+
+  const selectedTicket = tickets.find((t) => t.id === selectedId) ?? tickets[0];
+  const selectedCustomer = customers[selectedTicket?.customerId ?? ''];
+
+  const viewFilteredTickets = useMemo(() => {
+    let list = tickets;
+    if (activeView === 'mine') {
+      list = list.filter((t) => t.assignedTo === 'a1');
+    } else if (activeView === 'inbox') {
+      list = list.filter((t) => t.status !== 'closed');
+    }
+    if (agentFilter) {
+      list = list.filter((t) => t.assignedTo === agentFilter);
+    }
+    return list;
+  }, [tickets, activeView, agentFilter]);
+
+  const handleStatusChange = (id: string, status: TicketStatus) => {
+    setTickets((prev) =>
+      prev.map((t) => t.id === id ? { ...t, status, updatedAt: 'just now' } : t)
+    );
+  };
+
+  const handlePriorityChange = (id: string, priority: Priority) => {
+    setTickets((prev) =>
+      prev.map((t) => t.id === id ? { ...t, priority } : t)
+    );
+  };
+
+  const handleAssign = (id: string, agentId: string) => {
+    setTickets((prev) =>
+      prev.map((t) => t.id === id ? { ...t, assignedTo: agentId || null } : t)
+    );
+  };
+
+  const handleAddMessage = (ticketId: string, content: string, isInternal: boolean) => {
+    const newMsg = {
+      id: `m-${Date.now()}`,
+      author: 'Maya Chen',
+      initials: 'MC',
+      isAgent: true,
+      isInternal,
+      content,
+      timestamp: 'just now',
+    };
+    setTickets((prev) =>
+      prev.map((t) =>
+        t.id === ticketId
+          ? {
+              ...t,
+              messages: [...t.messages, newMsg],
+              updatedAt: 'just now',
+              firstResponseAt: t.firstResponseAt ?? 'just now',
+            }
+          : t
+      )
+    );
+  };
+
+  // When clicking a past ticket from customer panel that doesn't exist in list, just do nothing
+  const handleCustomerTicketSelect = (id: string) => {
+    const found = tickets.find((t) => t.id === id);
+    if (found) setSelectedId(id);
+  };
+
+  const counts = {
+    urgent: tickets.filter((t) => t.priority === 'urgent' && t.status !== 'resolved' && t.status !== 'closed').length,
+    unassigned: tickets.filter((t) => !t.assignedTo && t.status !== 'resolved' && t.status !== 'closed').length,
+  };
+
   return (
-    <div className="min-h-screen bg-[var(--background)]">
-      <main className="mx-auto max-w-3xl px-6 py-16 sm:py-24">
-        {/* Welcome Hero */}
-        <header className="mb-16">
-          <p className="mb-3 text-sm font-medium uppercase tracking-wider text-[var(--muted)]">
-            Welcome to
-          </p>
-          <h1 className="mb-4 font-[family-name:var(--font-display)] text-4xl font-bold tracking-tight text-[var(--foreground)] sm:text-5xl">
-            Ship Studio
-          </h1>
-          <p className="text-lg text-[var(--muted)]">
-            Build marketing sites with Claude Code. Just describe what you want.
-          </p>
-        </header>
+    <div className="flex h-screen overflow-hidden" style={{ background: 'var(--bg)' }}>
+      {/* Left sidebar */}
+      <AppSidebar
+        activeView={activeView}
+        onViewChange={setActiveView}
+        currentAgentId={agentFilter}
+        onAgentChange={setAgentFilter}
+      />
 
-        {/* Getting Started */}
-        <section className="mb-16">
-          <h2 className="mb-6 font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--foreground)]">
-            Getting Started
-          </h2>
-          <div className="space-y-6">
-            <div className="flex gap-4">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--foreground)] text-sm font-semibold text-[var(--background)]">
-                1
-              </div>
-              <div>
-                <h3 className="font-semibold text-[var(--foreground)]">
-                  Start a conversation
-                </h3>
-                <p className="text-[var(--muted)]">
-                  Just type what you want to build. &quot;Create a landing page for my coffee shop&quot; or &quot;I need a portfolio site.&quot;
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--foreground)] text-sm font-semibold text-[var(--background)]">
-                2
-              </div>
-              <div>
-                <h3 className="font-semibold text-[var(--foreground)]">
-                  I&apos;ll build it
-                </h3>
-                <p className="text-[var(--muted)]">
-                  Claude handles all the code. You&apos;ll see the site come together in real-time.
-                </p>
-              </div>
-            </div>
-            <div className="flex gap-4">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[var(--foreground)] text-sm font-semibold text-[var(--background)]">
-                3
-              </div>
-              <div>
-                <h3 className="font-semibold text-[var(--foreground)]">
-                  Refine together
-                </h3>
-                <p className="text-[var(--muted)]">
-                  Ask for changes, add pages, tweak colors. Keep iterating until it&apos;s perfect.
-                </p>
-              </div>
-            </div>
+      {/* Ticket list */}
+      <TicketList
+        tickets={viewFilteredTickets}
+        selectedId={selectedId}
+        onSelect={setSelectedId}
+        searchQuery={searchQuery}
+        onSearchChange={setSearchQuery}
+        statusFilter={statusFilter}
+        onStatusChange={setStatusFilter}
+        priorityFilter={priorityFilter}
+        onPriorityChange={setPriorityFilter}
+      />
+
+      {/* Main content */}
+      {selectedTicket ? (
+        <>
+          <TicketDetail
+            ticket={selectedTicket}
+            onStatusChange={handleStatusChange}
+            onPriorityChange={handlePriorityChange}
+            onAssign={handleAssign}
+            onAddMessage={handleAddMessage}
+            showCustomerPanel={showCustomerPanel}
+            onToggleCustomer={() => setShowCustomerPanel((v) => !v)}
+          />
+
+          {/* Customer panel */}
+          {showCustomerPanel && selectedCustomer && (
+            <CustomerPanel
+              customer={selectedCustomer}
+              onClose={() => setShowCustomerPanel(false)}
+              onTicketSelect={handleCustomerTicketSelect}
+            />
+          )}
+        </>
+      ) : (
+        <div className="flex flex-1 items-center justify-center" style={{ color: 'var(--fg-muted)' }}>
+          <div className="text-center">
+            <svg viewBox="0 0 24 24" fill="currentColor" style={{ width: 48, height: 48, opacity: 0.2, margin: '0 auto 12px' }}>
+              <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4-8 5-8-5V6l8 5 8-5v2z" />
+            </svg>
+            <p className="text-sm">Select a ticket to view it</p>
           </div>
-        </section>
+        </div>
+      )}
 
-        {/* Available Commands */}
-        <section className="mb-16">
-          <h2 className="mb-6 font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--foreground)]">
-            Available Commands
-          </h2>
-          <div className="space-y-4">
-            <div className="rounded-lg border border-[var(--foreground)]/10 p-4">
-              <code className="text-sm font-semibold text-[var(--accent)]">/onboarding</code>
-              <p className="mt-1 text-[var(--muted)]">
-                Set up a new project. I&apos;ll ask about your business and create a personalized build plan.
-              </p>
-            </div>
-            <div className="rounded-lg border border-[var(--foreground)]/10 p-4">
-              <code className="text-sm font-semibold text-[var(--accent)]">/page-remake</code>
-              <p className="mt-1 text-[var(--muted)]">
-                Rebuild from an example. Share a URL you like, and I&apos;ll create something similar but better.
-              </p>
-            </div>
-            <div className="rounded-lg border border-[var(--foreground)]/10 p-4">
-              <code className="text-sm font-semibold text-[var(--accent)]">/sanity-cms</code>
-              <p className="mt-1 text-[var(--muted)]">
-                Add editable content. When you want to update text yourself without touching code.
-              </p>
-            </div>
+      {/* Stats bar — floats over the header area */}
+      <div
+        className="fixed top-0 right-0 flex items-center gap-3 px-4 py-2 z-30"
+        style={{ pointerEvents: 'none' }}
+      >
+        {counts.urgent > 0 && (
+          <div
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+            style={{ background: '#fef2f2', color: '#ef4444', border: '1px solid #fecaca', pointerEvents: 'auto' }}
+          >
+            <div className="w-1.5 h-1.5 rounded-full bg-red-500 animate-pulse" />
+            {counts.urgent} urgent
           </div>
-        </section>
-
-        {/* What You Can Build */}
-        <section className="mb-16">
-          <h2 className="mb-6 font-[family-name:var(--font-display)] text-2xl font-semibold text-[var(--foreground)]">
-            What You Can Build
-          </h2>
-          <div className="flex flex-wrap gap-3">
-            {[
-              "Landing pages",
-              "Marketing sites",
-              "Portfolios",
-              "Company websites",
-              "Product pages",
-              "Coming soon pages",
-              "Event sites",
-              "Personal sites",
-            ].map((item) => (
-              <span
-                key={item}
-                className="rounded-full border border-[var(--foreground)]/10 px-4 py-2 text-sm text-[var(--foreground)]"
-              >
-                {item}
-              </span>
-            ))}
+        )}
+        {counts.unassigned > 0 && (
+          <div
+            className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+            style={{ background: '#fff7ed', color: '#f97316', border: '1px solid #fed7aa', pointerEvents: 'auto' }}
+          >
+            {counts.unassigned} unassigned
           </div>
-          <p className="mt-4 text-[var(--muted)]">
-            All without writing a single line of code.
-          </p>
-        </section>
-
-        {/* Quick Start */}
-        <section className="rounded-lg bg-[var(--foreground)] p-6 text-[var(--background)]">
-          <h2 className="mb-2 font-[family-name:var(--font-display)] text-xl font-semibold">
-            Ready to start?
-          </h2>
-          <p className="opacity-80">
-            Just describe what you want to build. I&apos;ll take it from there.
-          </p>
-        </section>
-      </main>
+        )}
+      </div>
     </div>
   );
 }

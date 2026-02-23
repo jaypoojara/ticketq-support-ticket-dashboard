@@ -1,31 +1,75 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fafaf9;
-  --foreground: #1c1917;
-  --muted: #78716c;
-  --accent: #dc2626;
+  --bg: #eef2ff;
+  --bg-panel: #e8eeff;
+  --bg-card: #f5f7ff;
+  --sidebar-bg: #1e1b4b;
+  --sidebar-hover: #2d2a6a;
+  --sidebar-active: #4f46e5;
+  --border: #d4d8f8;
+  --border-light: #e8eeff;
+  --fg: #1e1b4b;
+  --fg-muted: #6b7280;
+  --accent: #6366f1;
+  --accent-hover: #4f46e5;
+  --accent-light: #e0e7ff;
+  --urgent: #ef4444;
+  --urgent-bg: #fef2f2;
+  --high: #f97316;
+  --high-bg: #fff7ed;
+  --normal: #3b82f6;
+  --normal-bg: #eff6ff;
+  --low: #9ca3af;
+  --low-bg: #f9fafb;
+  --status-new: #8b5cf6;
+  --status-open: #3b82f6;
+  --status-pending: #f59e0b;
+  --status-resolved: #10b981;
+  --status-closed: #6b7280;
+  --internal-bg: #fef9c3;
+  --internal-border: #fde68a;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-muted: var(--muted);
+  --color-bg: var(--bg);
+  --color-bg-panel: var(--bg-panel);
+  --color-bg-card: var(--bg-card);
+  --color-sidebar: var(--sidebar-bg);
+  --color-border: var(--border);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
   --color-accent: var(--accent);
-  --font-sans: var(--font-body);
-  --font-display: var(--font-display);
+  --font-display: var(--font-outfit);
+  --font-body: var(--font-jakarta);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #fafaf9;
-    --muted: #a8a29e;
-    --accent: #f87171;
-  }
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+  overflow: hidden;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-jakarta), system-ui, sans-serif;
+}
+
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-light);
 }

@@ -1,23 +1,23 @@
 import type { Metadata } from "next";
-import { Space_Grotesk, DM_Sans } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
 import "./globals.css";
 import { AgentationProvider } from "@/components/AgentationProvider";
 
-const spaceGrotesk = Space_Grotesk({
+const outfit = Outfit({
   subsets: ["latin"],
-  variable: "--font-display",
+  variable: "--font-outfit",
   display: "swap",
 });
 
-const dmSans = DM_Sans({
+const jakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
-  variable: "--font-body",
+  variable: "--font-jakarta",
   display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Ship Studio",
-  description: "Build marketing sites with Claude Code. No coding required.",
+  title: "TicketQ — Support Dashboard",
+  description: "A powerful support ticket dashboard for small SaaS teams. Manage tickets, SLAs, and customer conversations in one place.",
 };
 
 export default function RootLayout({
@@ -26,8 +26,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${spaceGrotesk.variable} ${dmSans.variable}`}>
-      <body className="font-[family-name:var(--font-body)] antialiased">
+    <html lang="en" className={`${outfit.variable} ${jakarta.variable}`}>
+      <body className="antialiased">
         {children}
         <AgentationProvider />
       </body>
