@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useMemo } from "react";
-import { useRouter } from "next/navigation";
 import { useMember, useMemberstack } from "@memberstack/react";
 import { initialTickets, customers, agents, Ticket, Priority, TicketStatus } from "@/lib/ticketData";
 import { AppSidebar } from "@/components/dashboard/AppSidebar";
@@ -22,7 +21,6 @@ const viewLabels: Record<NavView, string> = {
 export default function Dashboard() {
   const { data: member } = useMember();
   const memberstack = useMemberstack();
-  const router = useRouter();
 
   // Derive a display name from the Memberstack member
   const memberName =
@@ -36,8 +34,12 @@ export default function Dashboard() {
     .join("") || "AG";
 
   const handleLogout = async () => {
-    await memberstack.logoutMember();
-    router.push("/login");
+    try {
+      await memberstack.logoutMember();
+    } catch {
+      // ignore errors — proceed to redirect regardless
+    }
+    window.location.href = "/api/logout";
   };
 
   const [tickets, setTickets] = useState<Ticket[]>(initialTickets);
