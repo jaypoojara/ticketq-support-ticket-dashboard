@@ -199,7 +199,7 @@ export default function LoginPage() {
 
         {/* Footer */}
         <p className="text-center text-xs mt-6" style={{ color: "var(--fg-muted)" }}>
-          Need access? Contact your admin.
+          You can only add members from your Memberstack account.
         </p>
       </div>
     </div>

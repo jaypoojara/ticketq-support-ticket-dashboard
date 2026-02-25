@@ -10,7 +10,7 @@
 
 ## Pages
 - **Dashboard** (`/`) — The full support ticket dashboard with all panels
-- **Login** (`/login`) — Branded sign-in page. Required before accessing the dashboard. Shows "Need access? Contact your admin." instead of a signup link.
+- **Login** (`/login`) — Branded sign-in page. Required before accessing the dashboard. Shows "You can only add members from your Memberstack account." instead of a signup link.
 
 ## Authentication (Memberstack)
 TicketQ uses **Memberstack** to protect the dashboard. Only logged-in members can access it.
