@@ -19,7 +19,7 @@ const viewLabels: Record<NavView, string> = {
 };
 
 export default function Dashboard() {
-  const { data: member } = useMember();
+  const { member } = useMember();
   const memberstack = useMemberstack();
 
   // Derive a display name from the Memberstack member
@@ -35,7 +35,7 @@ export default function Dashboard() {
 
   const handleLogout = async () => {
     try {
-      await memberstack.logoutMember();
+      await memberstack.logout();
     } catch {
       // ignore errors — proceed to redirect regardless
     }
