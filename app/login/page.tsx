@@ -26,8 +26,12 @@ export default function LoginPage() {
       await memberstack.loginMemberEmailPassword({ email, password });
       router.push("/");
     } catch (err: unknown) {
-      const message =
-        err instanceof Error ? err.message : "Invalid credentials. Please try again.";
+      let message = "Invalid credentials. Please try again.";
+      if (err instanceof Error) {
+        message = err.message;
+      } else if (err && typeof err === "object" && "message" in err) {
+        message = String((err as { message: unknown }).message);
+      }
       setError(message);
     } finally {
       setLoading(false);
